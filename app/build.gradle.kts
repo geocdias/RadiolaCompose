@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -58,10 +61,35 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+
     // Load Images
     implementation(libs.coil.compose)
+
     //Dependency Injection
     implementation(libs.koin)
+
+    // Material 3
+    implementation(libs.androidx.material3)
+
+    //Navigation
+    implementation (libs.androidx.navigation.compose)
+
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.firestore)
+
+    //Exoplayer
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.media3.ui)
+
+    //Room
+    implementation(libs.room)
+    annotationProcessor(libs.room.compiler)
+    implementation(libs.room.coroutine.suport)
+    ksp(libs.room.compiler)
+
     //Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
