@@ -13,6 +13,6 @@ fun SongRemoteEntity.toSongEntity() = SongEntity(
     title = title,
     artist = artist,
     songUrl = songUrl,
-    imageUrl = imageUrl,
-    id = 0
+    imageUrl = imageUrl
+
 )

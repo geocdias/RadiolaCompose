@@ -15,12 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.geocdias.radiolacompose.model.Song
+import br.com.geocdias.radiolacompose.domain.model.Song
 import br.com.geocdias.radiolacompose.samples.sampleSongs
 import br.com.geocdias.radiolacompose.ui.components.PlayerComponent
 import br.com.geocdias.radiolacompose.ui.components.SongComponent
@@ -32,24 +33,26 @@ fun HomeScreen(
     onClick: (String) -> Unit = {}
 ) {
     val viewModel: HomeViewModel = koinInject()
-    val songsState = viewModel.songsFlow.collectAsState(emptyList())
+    val songsState by viewModel.songsFlow.collectAsState(HomeScreenUiState())
     viewModel.getAllSongs()
-    HomeScreenContent(sampleSongs, songsState, onClick)
+
+    HomeScreenContent(songsState, onClick)
 }
 
 
 @Composable
 private fun HomeScreenContent(
-    songs: List<Song>,
-    songsState: State<List<Song>>? = null,
+    songsState: HomeScreenUiState = HomeScreenUiState(),
     onClick: (String) -> Unit = {}
 ) {
-   val songList =  songsState?.value ?: songs
+   val songList = songsState.songs
+   if (songList.isEmpty()) return
+
    Box(modifier = Modifier.fillMaxSize()) {
        PlayList(songList, onClick)
        PlayerComponent(
            modifier = Modifier.align(Alignment.BottomCenter),
-           songs.first()
+           songList.first()
        )
    }
 }
@@ -81,8 +84,8 @@ private fun PlayList(
                         bottom = 80.dp.takeIf { song.title == sampleSongs.last().title } ?: 0.dp
                    ),
                     song = song,
-                    onClick = { id ->
-                        onClick(id)
+                    onClick = {
+                        onClick(song.mediaId)
                     }
                 )
             }
@@ -97,7 +100,7 @@ private fun PlayList(
 fun HomeScreenPreview() {
     RadiolaComposeTheme {
         Surface {
-            HomeScreenContent(sampleSongs)
+            HomeScreenContent(HomeScreenUiState(sampleSongs))
         }
     }
 }

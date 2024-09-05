@@ -1,4 +1,4 @@
-package br.com.geocdias.radiolacompose.navigation
+package br.com.geocdias.radiolacompose.ui.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder

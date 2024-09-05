@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.geocdias.radiolacompose.R
-import br.com.geocdias.radiolacompose.model.Song
+import br.com.geocdias.radiolacompose.domain.model.Song
 import br.com.geocdias.radiolacompose.ui.theme.RadiolaComposeTheme
 import coil.compose.AsyncImage
 
@@ -23,13 +23,13 @@ import coil.compose.AsyncImage
 fun SongComponent(
     song: Song,
     modifier: Modifier = Modifier,
-    onClick: (id: String) -> Unit = {}
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier
             .fillMaxWidth()
             .clickable {
-                onClick(song.title)
+                onClick()
             }
     ) {
         AsyncImage(

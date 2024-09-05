@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.geocdias.radiolacompose.R
-import br.com.geocdias.radiolacompose.model.Song
+import br.com.geocdias.radiolacompose.domain.model.Song
 import br.com.geocdias.radiolacompose.samples.sampleSongs
 import br.com.geocdias.radiolacompose.ui.theme.LightBackground
 import br.com.geocdias.radiolacompose.ui.theme.MediumDarkBackground
@@ -42,17 +43,22 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun PlayerScreen(
     songId: String,
 ) {
-    val song = sampleSongs.first { it.title == songId }
+    val viewModel: PlayerViewModel = koinInject()
+    val state by viewModel.songFlow.collectAsState()
     var currentProgress by remember { mutableFloatStateOf(0f) }
     var isPlaying by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    viewModel.getSongById(songId)
+
     PlayerContent(
-        song = song,
+        uiState = state,
         currentProgress = currentProgress,
         isPlaying = isPlaying,
         onPlayPause = {
@@ -86,7 +92,7 @@ private suspend fun loadProgress(updateProgress: (Float) -> Unit) {
 
 @Composable
 private fun PlayerContent(
-    song: Song,
+    uiState: PlayerScreenUiState,
     currentProgress: Float = 1f,
     isPlaying: Boolean = false,
     onPlayPause: () -> Unit = {},
@@ -104,13 +110,14 @@ private fun PlayerContent(
             modifier = Modifier
                 .width(300.dp)
                 .height(300.dp),
-            model = song.imageUrl,
+            model = uiState.song?.imageUrl,
             contentDescription = null,
             placeholder = painterResource(id = R.drawable.ic_launcher_background)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = song.title,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = uiState.song?.title.orEmpty(),
             color = Color.White
         )
         Spacer(modifier = Modifier.height(64.dp))
@@ -200,10 +207,13 @@ private fun PlayerContent(
 @Composable
 fun PlayerScreenPreview() {
     RadiolaComposeTheme {
-        PlayerContent(song = Song(
-            title = "Song",
-            imageUrl = "https://picsum.photos/200"
-        )
+        PlayerContent(
+            uiState = PlayerScreenUiState(
+                song = Song(
+                    title = "Song",
+                    imageUrl = "https://picsum.photos/200"
+                )
+            )
         )
     }
 }

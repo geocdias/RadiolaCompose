@@ -1,6 +1,6 @@
 package br.com.geocdias.radiolacompose.samples
 
-import br.com.geocdias.radiolacompose.model.Song
+import br.com.geocdias.radiolacompose.domain.model.Song
 
 
 val sampleSongs = listOf(

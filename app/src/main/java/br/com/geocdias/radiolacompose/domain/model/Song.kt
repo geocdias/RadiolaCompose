@@ -1,4 +1,4 @@
-package br.com.geocdias.radiolacompose.model
+package br.com.geocdias.radiolacompose.domain.model
 
 data class Song(
     val mediaId: String = "",

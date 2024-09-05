@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.geocdias.radiolacompose.R
 import br.com.geocdias.radiolacompose.data.database.entities.SongEntity
-import br.com.geocdias.radiolacompose.model.Song
+import br.com.geocdias.radiolacompose.domain.model.Song
 import br.com.geocdias.radiolacompose.ui.theme.Black
 import br.com.geocdias.radiolacompose.ui.theme.RadiolaComposeTheme
 import coil.compose.AsyncImage

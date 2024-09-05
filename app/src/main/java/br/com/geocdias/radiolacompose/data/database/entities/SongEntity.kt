@@ -1,13 +1,13 @@
 package br.com.geocdias.radiolacompose.data.database.entities
 
 import androidx.room.Entity
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
-import br.com.geocdias.radiolacompose.model.Song
+import br.com.geocdias.radiolacompose.domain.model.Song
 
 @Entity(tableName = "songs")
 data class SongEntity(
-    @PrimaryKey(autoGenerate = true,)
-    val id: Long,
+    @PrimaryKey
     val mediaId: String,
     val title: String,
     val artist: String,
