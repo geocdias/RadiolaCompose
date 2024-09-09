@@ -1,6 +1,7 @@
 package br.com.geocdias.radiolacompose
 
 import android.app.Application
+import androidx.media3.exoplayer.ExoPlayer
 import br.com.geocdias.radiolacompose.data.database.RadiolaComposeDatabase
 import br.com.geocdias.radiolacompose.data.database.dao.SongDAO
 import br.com.geocdias.radiolacompose.data.datasources.LocalSongsDatasource
@@ -23,7 +24,7 @@ class RadiolaComposeApplication : Application() {
     private val appModule = module {
         singleOf(::SongsRepositoryImpl) { bind<SongsRepository>() }
         viewModel { HomeViewModel(get()) }
-        viewModel { PlayerViewModel(get()) }
+        viewModel { PlayerViewModel(get(), get()) }
 
         single<RadiolaComposeDatabase> {
             RadiolaComposeDatabase.getInstance(get())
@@ -31,14 +32,20 @@ class RadiolaComposeApplication : Application() {
         single<SongDAO> { get<RadiolaComposeDatabase>().songDao() }
         factory<RemoteSongsDatasource> { RemoteSongsDatasourceImpl() }
         factory<LocalSongsDatasource> { LocalSongsDatasourceImpl(get()) }
+    }
 
+    private val serviceModule = module {
+        single {
+            ExoPlayer.Builder(get()).build()
+        }
     }
     override fun onCreate() {
         super.onCreate()
         startKoin {
             androidContext(this@RadiolaComposeApplication)
             modules(
-                appModule
+                appModule,
+                serviceModule
             )
         }
     }

@@ -60,7 +60,6 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
 
     // Load Images
     implementation(libs.coil.compose)
@@ -81,8 +80,9 @@ dependencies {
 
     //Exoplayer
     implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.session)
 
     //Room
     implementation(libs.room)

@@ -18,31 +18,33 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import br.com.geocdias.radiolacompose.R
 import br.com.geocdias.radiolacompose.domain.model.Song
-import br.com.geocdias.radiolacompose.samples.sampleSongs
+import br.com.geocdias.radiolacompose.extentions.formatMilliseconds
 import br.com.geocdias.radiolacompose.ui.theme.LightBackground
 import br.com.geocdias.radiolacompose.ui.theme.MediumDarkBackground
 import br.com.geocdias.radiolacompose.ui.theme.RadiolaComposeTheme
 import br.com.geocdias.radiolacompose.ui.theme.Red_500
 import coil.compose.AsyncImage
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
@@ -51,49 +53,33 @@ fun PlayerScreen(
 ) {
     val viewModel: PlayerViewModel = koinInject()
     val state by viewModel.songFlow.collectAsState()
-    var currentProgress by remember { mutableFloatStateOf(0f) }
     var isPlaying by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    viewModel.getSongById(songId)
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getSongById(songId)
+    }
+
+    DisposableEffect(key1 = Unit) { onDispose { viewModel.releasePlayer() } }
 
     PlayerContent(
         uiState = state,
-        currentProgress = currentProgress,
         isPlaying = isPlaying,
         onPlayPause = {
             isPlaying = !isPlaying
             if (isPlaying) {
-                println("isPlaying $isPlaying")
-
-                scope.launch {
-                    println("scope")
-                    loadProgress { progress ->
-                        currentProgress = progress
-                    }
-                }
+                viewModel.startPlayer()
             } else {
-                scope.cancel()
-                println("isPlaying $isPlaying")
+                viewModel.pausePlayer()
             }
 
         }
     )
 }
 
-private suspend fun loadProgress(updateProgress: (Float) -> Unit) {
-    println("loadProgress")
-    for (i in 0..100) {
-        println("Progress ${i.toFloat() / 100}")
-        updateProgress(i.toFloat() / 100)
-        delay(100)
-    }
-}
-
 @Composable
 private fun PlayerContent(
     uiState: PlayerScreenUiState,
-    currentProgress: Float = 1f,
     isPlaying: Boolean = false,
     onPlayPause: () -> Unit = {},
     onForward: () -> Unit = {},
@@ -127,18 +113,20 @@ private fun PlayerContent(
 
         ) {
             Text(
-                text = "00:00",
+                text = uiState.currentDuration.formatMilliseconds(),
                 color = Color.White,
                 fontSize = 14.sp
             )
+
             LinearProgressIndicator(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                progress = { currentProgress },
+                progress = { uiState.progress },
                 color = Color.White,
                 trackColor = LightBackground
             )
+
             Text(
-                text = "03:20",
+                text = uiState.totalDuration.formatMilliseconds(),
                 color = Color.White,
                 fontSize = 14.sp
             )
