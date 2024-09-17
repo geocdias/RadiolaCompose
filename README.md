@@ -1,7 +1,5 @@
 # RadiolaCompose
 
-# Radiola
-
 ![Home Screen](https://github.com/geocdias/Radiola/blob/main/screenshots/home_and_player.png?s=200)
 
 ## About this Project
